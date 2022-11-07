@@ -10,18 +10,18 @@ async function buildHTML() {
    await fs.promises.readdir(components, { withFileTypes: true })
                     .then((files) => {
                       const readStream = fs.createReadStream(path.join(__dirname, 'template.html'));
+                      let data = '';
                       readStream.on('data', async (chunk) => {
-                        let content = '';
-                        content += chunk;
+                        data += chunk;
                         for(let file of files) {
                           if (file.isFile() && path.extname(file.name) === '.html') {
                             const readUnit = await fs.promises.readFile(path.join(components, file.name));
                             const tag = path.basename(file.name, '.html');
-                            content = content.replace(`{{${tag}}}`, readUnit);
+                            data = data.replace(`{{${tag}}}`, readUnit);
                           }
                         }
                         // const indexPath = path.join(newDir, 'index.html');
-                        fs.writeFile(path.join(newDir, 'index.html'), content, (err) => {
+                        fs.writeFile(path.join(newDir, 'index.html'), data, (err) => {
                           if (err) throw err;
                         })
                       })
